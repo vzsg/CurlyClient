@@ -2,6 +2,7 @@ import XCTest
 import NIO
 import Vapor
 import CurlyClient
+import CCurlyCURL
 
 final class CurlyClientTests: XCTestCase {
     private func testApplication() throws -> Application {
@@ -89,10 +90,26 @@ final class CurlyClientTests: XCTestCase {
         XCTAssertEqual("fapapucs", getRes.cookies["freeform"])
     }
 
+    func testTimeoutError() throws {
+        let app = try testApplication()
+        let futureRes = try app.client().get("https://httpstat.us/200?sleep=5000", beforeSend: { req in
+            req.addCurlyOption(.timeout(seconds: 1))
+        })
+        
+        XCTAssertThrowsError(try futureRes.wait(), "Should throw timeout error") { error in
+            guard let curlyError = error as? CurlyError else {
+                XCTFail("Should throw a CURLResponse.Error type")
+                return
+            }
+            XCTAssertEqual(curlyError.code, 28)
+        }
+    }
+    
     static var allTests = [
         ("testHttpBinPost", testHttpBinPost),
         ("testHttpBinGet", testHttpBinGet),
         ("testConvenience", testConvenience),
         ("testCookieJar", testCookieJar),
+        ("testTimeoutError", testTimeoutError),
     ]
 }

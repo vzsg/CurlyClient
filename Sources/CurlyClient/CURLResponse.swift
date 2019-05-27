@@ -24,21 +24,23 @@ enum ResponseReadState {
 	case status, headers, body
 }
 
+public typealias CurlyError = CURLResponse.Error
+
 /// Response for a CURLRequest. 
 /// Obtained by calling CURLResponse.perform.
-class CURLResponse {
+public class CURLResponse {
 	/// A response header that can be retreived.
 	typealias Header = HTTPResponseHeader
 	/// A confirmation func thats used to obtain an asynchrnous response.
 	typealias Confirmation = () throws -> CURLResponse
 	/// An error thrown while retrieving a response.
-	struct Error: Swift.Error {
+	public struct Error: Swift.Error {
 		/// The curl specific request response code.
-		let code: Int
+		public let code: Int
 		/// The string message for the curl response code.
-		let description: String
+		public let description: String
 		/// The response object for this error.
-		let response: CURLResponse
+		public let response: CURLResponse
 		
 		init(_ response: CURLResponse, code: CURLcode) {
 			self.code = Int(code.rawValue)
