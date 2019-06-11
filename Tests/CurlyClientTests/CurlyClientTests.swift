@@ -105,11 +105,26 @@ final class CurlyClientTests: XCTestCase {
         }
     }
     
+    func testSelfSignedCertificate() throws {
+        let app = try testApplication()
+        let client = try app.client()
+
+        XCTAssertThrowsError(try client.get("https://self-signed.badssl.com/").wait())
+
+        let insecure = try client.get("https://self-signed.badssl.com/", beforeSend: { req in
+            req.addCurlyOption(.insecure(true))
+        }).wait()
+
+        // httpbin returns a redirect, so the this assert fails if Curly didn't follow it
+        XCTAssertEqual(200, insecure.http.status.code)
+    }
+
     static var allTests = [
         ("testHttpBinPost", testHttpBinPost),
         ("testHttpBinGet", testHttpBinGet),
         ("testConvenience", testConvenience),
         ("testCookieJar", testCookieJar),
         ("testTimeoutError", testTimeoutError),
+        ("testSelfSignedCertificate", testSelfSignedCertificate),
     ]
 }

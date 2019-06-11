@@ -273,10 +273,10 @@ public class CURLResponse {
 	}
 	
 	let curl: CURL
-	internal(set) var headers = Array<(Header.Name, String)>()
+	var headers = Array<(Header.Name, String)>()
 	
 	/// The response's raw content body bytes.
-	internal(set) var bodyBytes = [UInt8]()
+	var bodyBytes = [UInt8]()
 	
 	var readState = ResponseReadState.status
 	// these need to persist until the request has completed execution.
